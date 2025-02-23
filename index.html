@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>matura</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="content">
+    <h1>zadania na dziś</h1>
+    <button id="todayTaskButton">pokaż pdf</button>
+    <p id="weekendMessage" class="hidden">dziś odpoczywamy</p>
+    </div>
+
+    <div class="content">
+    <h2>wybierz tydzień</h2>
+    <select id="weekSelector">
+        <option value=""> (*•‿•*) </option>
+    </select>
+    <h2>wybierz dzień</h2>
+    <div id="daysContainer"></div>
+    </div>
+
+    <div class="content">
+        <button id="randomImageButton">✿ ʕ •ᴥ•ʔ</button>
+        <div id="imageContainer"></div>
+    </div>
+
+    <div class="empty"></div>
+
+    <script>
+        function generateWeekdays(startDate, numDays) {
+            let currentDate = new Date(startDate);
+            let weekdays = {};
+            let weekCounter = 1;
+            let daysInWeek = [];
+            let totalDays = 0;
+            
+            while (totalDays < numDays) {
+                if (currentDate.getDay() !== 0 && currentDate.getDay() !== 6) { // Pomijamy weekendy
+                    daysInWeek.push(currentDate.toISOString().split("T")[0]);
+                    totalDays++;
+                    if (daysInWeek.length === 5) {
+                        weekdays[`tydzien${weekCounter}`] = [...daysInWeek];
+                        daysInWeek = [];
+                        weekCounter++;
+                    }
+                }
+                currentDate.setDate(currentDate.getDate() + 1);
+            }
+            return weekdays;
+        }
+
+        const startDate = new Date("2025-02-24");
+        const weekdays = generateWeekdays(startDate, 40);
+        const today = new Date().toISOString().split("T")[0];
+
+        const weekSelector = document.getElementById("weekSelector");
+        const daysContainer = document.getElementById("daysContainer");
+        const todayTaskButton = document.getElementById("todayTaskButton");
+        const weekendMessage = document.getElementById("weekendMessage");
+        const randomImageButton = document.getElementById("randomImageButton");
+        const imageContainer = document.getElementById("imageContainer");
+
+        Object.keys(weekdays).forEach(week => {
+            let option = document.createElement("option");
+            option.value = week;
+            option.textContent = week.replace("tydzien", "Tydzień ");
+            weekSelector.appendChild(option);
+        });
+
+        weekSelector.addEventListener("change", function() {
+            const week = this.value;
+            daysContainer.innerHTML = "";
+            if (!week) return;
+
+            weekdays[week].forEach(date => {
+                if (date > today) return;
+                
+                const button = document.createElement("button");
+                button.textContent = date;
+                button.onclick = () => showPDF(week, date);
+                daysContainer.appendChild(button);
+            });
+        });
+
+        function showPDF(week, date) {
+            const pdfUrl = `zadania/${week}/${date}.pdf`;
+            window.open(pdfUrl, "_blank");
+        }
+
+        todayTaskButton.addEventListener("click", function() {
+            let todayDate = new Date();
+            let todayStr = todayDate.toISOString().split("T")[0];
+            let dayOfWeek = todayDate.getDay();
+            
+            if (dayOfWeek === 0 || dayOfWeek === 6) {
+                weekendMessage.classList.remove("hidden");
+            } else {
+                weekendMessage.classList.add("hidden");
+                for (const [week, days] of Object.entries(weekdays)) {
+                    if (days.includes(todayStr)) {
+                        showPDF(week, todayStr);
+                        return;
+                    }
+                }
+            }
+        });
+
+        randomImageButton.addEventListener("click", function() {
+            const randomNumber = Math.floor(Math.random() * 7) + 1; // Zakładając, że masz 10 zdjęć
+            const imageUrl = `images/img${randomNumber}.jpg`;
+            imageContainer.innerHTML = `<img src="${imageUrl}" alt="img">`;
+        });
+    </script>
+</body>
+</html>
