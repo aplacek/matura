@@ -23,6 +23,7 @@
     <div id="daysContainer"></div>
     </div>
 
+
     <div class="content">
         <button id="randomImageButton">✿ ʕ •ᴥ•ʔ</button>
         <div id="imageContainer"></div>
@@ -87,9 +88,38 @@
         });
 
         function showPDF(week, date) {
-            const pdfUrl = `zadania/${week}/${date}.pdf`;
-            window.open(pdfUrl, "_blank");
+            if (week == "tydzien3") {
+                showLink(date);
+            } else {
+                const pdfUrl = `zadania/${week}/${date}.pdf`;
+                window.open(pdfUrl, '_blank');
+            }
         }
+
+        function showLink(date) {
+            let linkUrl = '';
+            switch (date) {
+                case '2025-03-10':
+                    linkUrl = 'https://szaloneliczby.pl/wlasnosci-funkcji-zadania-maturalne/';
+                    break;
+                case '2025-03-11':
+                    linkUrl = 'https://szaloneliczby.pl/wykresy-wzory-i-wspolczynniki-funkcji-liniowej-zadania-maturalne/';
+                    break;
+                case '2025-03-12':
+                    linkUrl = 'https://szaloneliczby.pl/wykresy-funkcji-kwadratowej-zadania-maturalne/';
+                    break;
+                case '2025-03-13':
+                    linkUrl = 'https://szaloneliczby.pl/wzory-i-wspolczynniki-funkcji-kwadratowej-zadania-maturalne/';
+                    break;
+                case '2025-03-14':
+                    linkUrl = 'https://szaloneliczby.pl/przeksztalcenia-funkcji-zadania-maturalne/';
+                    break;
+                default:
+                    linkUrl = 'https://szaloneliczby.pl/wlasnosci-funkcji-zadania-maturalne/';
+            }
+            window.open(linkUrl, '_blank');
+        }
+
 
         todayTaskButton.addEventListener("click", function() {
             let todayDate = new Date();
@@ -102,7 +132,11 @@
                 weekendMessage.classList.add("hidden");
                 for (const [week, days] of Object.entries(weekdays)) {
                     if (days.includes(todayStr)) {
-                        showPDF(week, todayStr);
+                        if (week === "tydzien3") {
+                            showLink(todayStr); // Poprawione wywołanie funkcji z poprawną datą
+                        } else {
+                            showPDF(week, todayStr);
+                        }
                         return;
                     }
                 }
